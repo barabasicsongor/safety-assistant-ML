@@ -1,0 +1,5 @@
+# Run the command while in this directory
+pip install requests -t .
+
+# Then zip the elements from this directory, and that is your
+# deployment package for AWS Lambda
