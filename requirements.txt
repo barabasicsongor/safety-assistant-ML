@@ -1,7 +1,6 @@
 numpy==1.13
 pandas==0.20.3
 geopy==1.11.0
-shapely==1.6b4
 pygeoj==0.2.5
 datetime==4.0.1
 colour==0.1.4
@@ -9,3 +8,5 @@ Theano==0.9.0
 Keras==2.0.6
 h5py
 sklearn
+geos
+shapely==1.6b4

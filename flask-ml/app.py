@@ -31,12 +31,12 @@ def make_predict():
 
     nhood = utilities.get_nhood(nhoods, place)
 
-    print('Hood found: {}'.format(nhood))
-
-    pred = predictor.predict(np.array([[nhood, day]]))
-    pred = float(pred[0][0])
-
-    dct = {'result': pred}
+    if nhood == '':
+    	pred = -1
+    else:
+    	print('Hood found: {}'.format(nhood))
+    	pred = predictor.predict(np.array([[nhood, day]]))
+    	pred = float(pred[0][0])
 
     return jsonify(results=pred)
 

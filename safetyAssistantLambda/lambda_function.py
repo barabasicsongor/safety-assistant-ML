@@ -9,14 +9,16 @@ def lambda_handler(event, context):
     city = event['currentIntent']['slots']['city']
     place = "{}, {}".format(street, city)
     
-    url = 'http://safetyassistant.eu-west-2.elasticbeanstalk.com/api'
+    url = 'http://safetyassistant.us-east-1.elasticbeanstalk.com/api/'
     data = json.dumps({'day': day, 'place': place})
     r = requests.post(url, data)
     r_json = r.json()
 
     result = float(r_json['results'])
 
-    if result >= 0 and result < 0.15:
+    if result == -1:
+        result_str = "I could not find any relevant data about the location."
+    elif result >= 0 and result < 0.15:
     	result_str = "All I can say is have fun buddy, enjoy your time while you're there!"
     elif result >= 0.15 and result < 0.4:
     	result_str = "The area you are going to is not that dangerous, but still be careful!"

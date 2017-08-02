@@ -1,7 +1,8 @@
 import json
 import requests
 
-url = 'http://safetyassistant.eu-west-2.elasticbeanstalk.com/api'
-data = json.dumps({'day': 'Monday', 'place': 'California St, San Francisco, CA'})
+# url = 'http://0.0.0.0:5000/api'
+url = 'http://safetyassistant.us-east-1.elasticbeanstalk.com/api'
+data = json.dumps({'day': 'Friday', 'place': 'California street, San Francisco'})
 r = requests.post(url, data)
 print(r.json())
