@@ -1,5 +1,6 @@
 from geopy.distance import vincenty
-from geopy.geocoders import Nominatim
+# from geopy.geocoders import Nominatim
+from geopy import geocoders
 from geopy.exc import GeocoderTimedOut
 from colour import Color
 import sys
@@ -28,7 +29,8 @@ Returns the latitude and longitude of the address given
 using reverse geocoding
 
 """
-geolocator = Nominatim(scheme='http')
+# geolocator = Nominatim(scheme='http')
+geolocator = geocoders.GoogleV3(scheme="http")
 def reverse_geocode(place):
     try:
         location = geolocator.geocode(place)

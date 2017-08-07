@@ -1,15 +1,44 @@
 import json
 import requests
+import datetime
+
+def getDate(date_str):
+    year, month, day = (int(x) for x in date_str.split('-'))
+    ans = datetime.date(year, month, day)
+    return ans
 
 def lambda_handler(event, context):
     
     sessionAttributes = event['sessionAttributes']
-    day = event['currentIntent']['slots']['day']
-    street = event['currentIntent']['slots']['street_address']
-    city = event['currentIntent']['slots']['city']
+    slots = event['currentIntent']['slots']
+
+    try:
+        day = slots['day']
+    except:
+        try:
+            date = slots['date']
+            dt = getDate(date)
+            days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+            day = days[dt.weekday()]
+        except:
+            return { 
+                "sessionAttributes": sessionAttributes,
+                "dialogAction": {
+                    "type": "Close",
+                    "fulfillmentState": "Fulfilled",
+                    "message": {
+                        "contentType": "PlainText",
+                        "content": "Sorry. Something went wrong."
+                    }
+                }
+            }
+
+
+    street = slots['street_address']
+    city = slots['city']
     place = "{}, {}".format(street, city)
     
-    url = 'http://safetyassistant.us-east-1.elasticbeanstalk.com/api/'
+    url = 'http://safetyassistant.us-east-1.elasticbeanstalk.com/api'
     data = json.dumps({'day': day, 'place': place})
     r = requests.post(url, data)
     r_json = r.json()
