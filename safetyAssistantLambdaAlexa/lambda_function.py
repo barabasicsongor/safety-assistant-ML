@@ -7,12 +7,28 @@ def getDate(date_str):
     ans = datetime.date(year, month, day)
     return ans
 
-def lambda_handler(event, context):
+def final_json(event, text):
+    return {
+		"response": {
+			"outputSpeech": {
+				"type": "PlainText",
+				"text": text
+			},
+			"card": {
+				"content": text,
+				"title": "SafetyAssistant Answer",
+				"type": "Simple"
+			}
+		}
+	}
 
-    if event['session']['application']['applicationId'] != 'amzn1.ask.skill.03e0f3ce-8a37-4e1c-bd2f-6a7053028a60':
-        raise ValueError('Invalid Application ID')
+def launch_req(event):
+    return final_json(event, "Hello, I am SafetyBot!")
 
-    session = event['session']
+def end_req(event):
+    return final_json(event, "Goodbye!")
+
+def int_req(event):
     slots = event['request']['intent']['slots']
 
     try:
@@ -24,31 +40,18 @@ def lambda_handler(event, context):
             days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
             day = days[dt.weekday()]
         except:
-            return { 
-                "sessionAttributes": {},
-                "response": {
-                    "outputSpeech": {
-                        "type": "PlainText",
-                        "text": "Sorry. Something went wrong."
-                    },
-                    "card": {
-                    	"content": "Sorry. Something went wrong.",
-                    	"title": "Error",
-                    	"type": "Simple"
-                    },
-                    "reprompt": {
-                    	"outputSpeech": {
-                    		"type": "PlainText",
-                    		"text": ""
-                    	}
-                    }
-                }
-            }
+            return final_json(event, "Sorry. Something went wrong.")
 
+    try:
+        address = slots['street_address']['value']
+    except:
+        try:
+            address = slots['zip']['value']
+        except:
+            return final_json(event, "Sorry. Something went wrong.")
 
-    street = slots['street_address']['value']
-    city = slots['city']['value']
-    place = "{}, {}".format(street, city)
+    city = 'San Francisco'
+    place = "{}, {}".format(address, city)
 
     url = 'http://safetyassistant.us-east-1.elasticbeanstalk.com/api'
     data = json.dumps({'day': day, 'place': place})
@@ -60,35 +63,28 @@ def lambda_handler(event, context):
     if result == -1:
         result_str = "I could not find any relevant data about the location."
     elif result >= 0 and result < 0.15:
-    	result_str = "All I can say is have fun buddy, enjoy your time while you're there!"
+    	result_str = "It is safe."
     elif result >= 0.15 and result < 0.4:
-    	result_str = "The area you are going to is not that dangerous, but still be careful!"
-    elif result >= 0.4 and result < 0.7:
-    	result_str = "The area you are going to is unsafe. Try not to be too adventurous!"
+    	result_str = "It is relatively OK, but be careful."
     else:
-    	result_str = "The area you are going to is extremely dangerous. Be careful, and don't go there on your own!"
+    	result_str = "It is NOT safe."
     
     # result = "Going on {} to {}".format(day, place)
 
-    response = { 
-                "sessionAttributes": {},
-                "response": {
-                    "outputSpeech": {
-                        "type": "PlainText",
-                        "text": result_str
-                    },
-                    "card": {
-                    	"content": result_str,
-                    	"title": "Response",
-                    	"type": "Simple"
-                    },
-                    "reprompt": {
-                    	"outputSpeech": {
-                    		"type": "PlainText",
-                    		"text": ""
-                    	}
-                    }
-                }
-            }
-    
-    return response
+    return final_json(event, result_str)
+
+
+def lambda_handler(event, context):
+
+    if event['session']['application']['applicationId'] != 'amzn1.ask.skill.03e0f3ce-8a37-4e1c-bd2f-6a7053028a60':
+        raise ValueError('Invalid Application ID')
+
+    session = event['session']
+    request = event['request']
+
+    if request['type'] == 'LaunchRequest':
+    	return launch_req(event)
+    elif request['type'] == 'SessionEndedRequest':
+    	return end_req(event)
+    else:
+    	return int_req(event)

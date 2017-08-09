@@ -33,10 +33,27 @@ def lambda_handler(event, context):
                 }
             }
 
+    
+    try:
+    	address = slots['street_address']
+    except:
+    	try:
+    		address = slots['zip']
+    	except:
+    		return { 
+                "sessionAttributes": sessionAttributes,
+                "dialogAction": {
+                    "type": "Close",
+                    "fulfillmentState": "Fulfilled",
+                    "message": {
+                        "contentType": "PlainText",
+                        "content": "Sorry. Something went wrong."
+                    }
+                }
+            }
 
-    street = slots['street_address']
-    city = slots['city']
-    place = "{}, {}".format(street, city)
+    city = 'San Francisco'
+    place = "{}, {}".format(address, city)
     
     url = 'http://safetyassistant.us-east-1.elasticbeanstalk.com/api'
     data = json.dumps({'day': day, 'place': place})
@@ -48,13 +65,11 @@ def lambda_handler(event, context):
     if result == -1:
         result_str = "I could not find any relevant data about the location."
     elif result >= 0 and result < 0.15:
-    	result_str = "All I can say is have fun buddy, enjoy your time while you're there!"
+    	result_str = "It is safe."
     elif result >= 0.15 and result < 0.4:
-    	result_str = "The area you are going to is not that dangerous, but still be careful!"
-    elif result >= 0.4 and result < 0.7:
-    	result_str = "The area you are going to is unsafe. Try not to be too adventurous!"
+    	result_str = "It is relatively OK, but be careful."
     else:
-    	result_str = "The area you are going to is extremely dangerous. Be careful, and don't go there on your own!"
+    	result_str = "It is NOT safe."
     
     # result = "Going on {} to {}".format(day, place)
     
