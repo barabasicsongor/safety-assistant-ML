@@ -7,7 +7,7 @@ def getDate(date_str):
     ans = datetime.date(year, month, day)
     return ans
 
-def final_json(event, text):
+def final_json(event, text, should_end):
     return {
 		"response": {
 			"outputSpeech": {
@@ -18,15 +18,16 @@ def final_json(event, text):
 				"content": text,
 				"title": "SafetyAssistant Answer",
 				"type": "Simple"
-			}
+			},
+			"shouldEndSession": should_end
 		}
 	}
 
 def launch_req(event):
-    return final_json(event, "Hello, I am SafetyBot!")
+    return final_json(event, "Hello. How can I help you?", False)
 
 def end_req(event):
-    return final_json(event, "Goodbye!")
+    return final_json(event, "Goodbye!", True)
 
 def int_req(event):
     slots = event['request']['intent']['slots']
@@ -40,7 +41,7 @@ def int_req(event):
             days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
             day = days[dt.weekday()]
         except:
-            return final_json(event, "Sorry. Something went wrong.")
+            return final_json(event, "Sorry. Something went wrong. Please try again.", False)
 
     try:
         address = slots['street_address']['value']
@@ -48,7 +49,7 @@ def int_req(event):
         try:
             address = slots['zip']['value']
         except:
-            return final_json(event, "Sorry. Something went wrong.")
+            return final_json(event, "Sorry. Something went wrong. Please try again.", False)
 
     city = 'San Francisco'
     place = "{}, {}".format(address, city)
@@ -71,7 +72,7 @@ def int_req(event):
     
     # result = "Going on {} to {}".format(day, place)
 
-    return final_json(event, result_str)
+    return final_json(event, result_str, True)
 
 
 def lambda_handler(event, context):
