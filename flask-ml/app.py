@@ -40,6 +40,12 @@ def make_predict():
 
     return jsonify(results=pred)
 
+@app.route('/heatmap', methods=['GET'])
+def heatmap():
+	with open('files/output/heatmap.json') as data_file:
+		data = json.load(data_file)
+	return jsonify(data)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
