@@ -29,6 +29,9 @@ def launch_req(event):
 def end_req(event):
     return final_json(event, "Goodbye!", True)
 
+def help_req(event):
+    return final_json(event, "Say for example: Is it safe tomorrow on California street?", False)
+
 def int_req(event):
     slots = event['request']['intent']['slots']
 
@@ -88,4 +91,9 @@ def lambda_handler(event, context):
     elif request['type'] == 'SessionEndedRequest':
     	return end_req(event)
     else:
-    	return int_req(event)
+        if request['intent']['name'] == 'AMAZON.CancelIntent' or request['intent']['name'] == 'AMAZON.StopIntent':
+            return end_req(event)
+        elif request['intent']['name'] == 'AMAZON.HelpIntent':
+            return help_req(event)
+        else:
+    	    return int_req(event)
