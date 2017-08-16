@@ -47,7 +47,7 @@ def heatmap():
 	return jsonify(data)
 
 @app.route('/armap', methods=['GET'])
-def heatmap():
+def armap():
 	with open('files/output/ar_map.json') as data_file:
 		data = json.load(data_file)
 	return jsonify(data)

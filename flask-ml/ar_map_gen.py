@@ -15,7 +15,7 @@ groups = []
 
 for cr in new_cr:
     
-    min = 155.0
+    min = 305.0
     min_ind = -1
     index = -1
     
