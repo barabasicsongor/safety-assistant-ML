@@ -45,6 +45,56 @@ def gen_heatmap(fname, nhoods, crime_freq):
     f.write(']\n}')
     f.close()
 
+"""
+
+Generate JSON file for heatmap
+
+"""
+def gen_ar_map(fname, cr_groups):
+    f = open(fname, 'w')
+    f.write('{\n"items": [\n')
+    
+    lower_color = '#89e21b'
+    mid_color = '#f7ef54'
+    up_color = '#E53935'
+    
+    group_count = [len(x) for x in cr_groups]
+    
+    lower_bound = int(sum(group_count)/len(cr_groups))
+    mid_bound = lower_bound * 2
+    
+    for x in range(0, (len(cr_groups)-1)):
+        gr = cr_groups[x]
+        l = len(gr)
+        
+        if l < lower_bound:
+            color = lower_color
+        elif l >= lower_bound and l < mid_bound:
+            color = mid_color
+        else:
+            color = up_color
+        
+        f.write('{')
+        f.write('"title": "{}", "color": "{}", "lat": {}, "lng": {}'.format(str(l), color, gr[0].lat, gr[0].lng))
+        f.write('},\n')
+    
+    # Write out the last one   
+    gr = cr_groups[len(cr_groups) - 1]
+    l = len(gr)
+    
+    if l < lower_bound:
+        color = lower_color
+    elif l >= lower_bound and l < mid_bound:
+        color = mid_color
+    else:
+        color = up_color
+        
+    f.write('{')
+    f.write('"title": "{}", "color": "{}", "lat": {}, "lng": {}'.format(str(l), color, gr[0].lat, gr[0].lng))
+    f.write('}\n')
+    
+    f.write(']\n}')
+    f.close()
 
 """
 

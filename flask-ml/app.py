@@ -46,6 +46,12 @@ def heatmap():
 		data = json.load(data_file)
 	return jsonify(data)
 
+@app.route('/armap', methods=['GET'])
+def heatmap():
+	with open('files/output/ar_map.json') as data_file:
+		data = json.load(data_file)
+	return jsonify(data)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
